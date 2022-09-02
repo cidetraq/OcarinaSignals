@@ -24,29 +24,20 @@ fun Ocarina(instrumentName: String){
             var sequenceName = songSequences.filterValues{it == playedSequence}.keys.elementAt(0)
             Text(text = "You played ${sequenceName}!")
         }
-        fun determineIfMatchingSequences(note: String){
-            var localSequence = playedSequence
-            println("localSequence: $localSequence")
-            playedNote = note
-//            localSequence += note
+        fun determineIfMatchingSequences(){
             playedSequence += playedNote
-            println("localSequence2: $localSequence")
-            println("songSequences.values" + songSequences.values)
-            var foundMatches = songSequences.values.filter { it.contains(localSequence) }
+            var foundMatches = songSequences.values.filter { it.contains(playedSequence) }
             if (foundMatches.isEmpty()){
                 playedSequence = ""
             }
-//            if (!songSequences.containsValue(localSequence)){
-//                        playedSequence = ""
-//                    }
-            if (localSequence in songSequences.values){
+            if (playedSequence in songSequences.values){
                 isMatch = true
             }
         }
         fun clickNote(note: String){
             playedNote = note
             isMatch = false
-            determineIfMatchingSequences(note)
+            determineIfMatchingSequences()
         }
 
         Row(modifier= Modifier
