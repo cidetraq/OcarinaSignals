@@ -1,7 +1,7 @@
 package com.example.ocarinasignals
 
 import androidx.compose.foundation.ScrollState
-import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
@@ -12,9 +12,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.composable
+
 
 @Composable
-fun mainScreen(instrumentName: String, songSequences: Map<String,String> = mapOf<String,String>()){
+fun Play(instrumentName: String, songSequences: Map<String,String> = mapOf<String,String>()){
     var scrollstate = ScrollState(0)
     Column(modifier=Modifier.verticalScroll(scrollstate)) {
         var playedNote by rememberSaveable { mutableStateOf("") }
@@ -128,20 +132,93 @@ fun SequenceEditor(updateSongSequences: (String,String)-> Unit ){
     }
 }
 
+sealed class Screens(val title: String, val route: String) {
+    object Play : Screens("Play Ocarina", "play")
+    object SequenceEditor : Screens("Edit Sequences", "editSequence")
+}
+
 @Composable
 fun Ocarina(instrumentName: String){
+    val navController = rememberNavController()
     var songSequences by rememberSaveable { mutableStateOf(mutableMapOf<String, String>("C Major Triad" to "CEG", "The Lick" to "DEFGDECD")) }
     Scaffold(
         drawerContent = {
             Text("Drawer title", modifier = Modifier.padding(16.dp))
             Divider()
-            Text("Main view", modifier = Modifier.padding(16.dp))
-            Text("Sequences", modifier = Modifier.padding(16.dp))
+            Text("Main view", modifier = Modifier.padding(16.dp).clickable { navController
+                .navigate(Screens.Play.route) })
+            Text("Sequences", modifier = Modifier.padding(16.dp).clickable { navController
+                .navigate(Screens.SequenceEditor.route) })
         }
     ) {
         Column() {
-            mainScreen(instrumentName, songSequences)
-            SequenceEditor() { newSequenceName: String, newSequence: String -> songSequences[newSequenceName] = newSequence }
+                NavHost(
+                    navController = navController,
+                    startDestination = Screens.Play.route
+                ) {
+                    composable(Screens.Play.route) {
+                        Play(instrumentName, songSequences)
+                    }
+                    composable(Screens.SequenceEditor.route) {
+                        SequenceEditor() { newSequenceName: String, newSequence: String -> songSequences[newSequenceName] = newSequence }
+                    }
+                }
         }
        }
 }
+//
+//@Composable
+//fun AppMainScreen() {
+//    val navController = rememberNavController()
+//    Surface(color = MaterialTheme.colors.background) {
+//        val drawerState = rememberDrawerState(DrawerValue.Closed)
+//        val scope = rememberCoroutineScope()
+//        val openDrawer = {
+//            scope.launch {
+//                drawerState.open()
+//            }
+//        }
+//        ModalDrawer(
+//            drawerState = drawerState,
+//            gesturesEnabled = drawerState.isOpen,
+//            drawerContent = {
+//                Drawer(
+//                    onDestinationClicked = { route ->
+//                        scope.launch {
+//                            drawerState.close()
+//                        }
+//                        navController.navigate(route) {
+//                            popUpTo = navController.graph.startDestination
+//                            launchSingleTop = true
+//                        }
+//                    }
+//                )
+//            }
+//        ) {
+//            NavHost(
+//                navController = navController,
+//                startDestination = DrawerScreens.Home.route
+//            ) {
+//                composable(DrawerScreens.Home.route) {
+//                    Home(
+//                        openDrawer = {
+//                            openDrawer()
+//                        }
+//                    )
+//                }
+//                composable(DrawerScreens.Account.route) {
+//                    Account(
+//                        openDrawer = {
+//                            openDrawer()
+//                        }
+//                    )
+//                }
+//                composable(DrawerScreens.Help.route) {
+//                    Help(
+//                        navController = navController
+//                    )
+//                }
+//            }
+//        }
+//    }
+//}
