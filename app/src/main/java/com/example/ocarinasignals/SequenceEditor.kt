@@ -1,3 +1,5 @@
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.Text
@@ -9,7 +11,24 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+
+
+fun showMessageOnNewSequenceAdded(newSequenceName: String, context: Context) {
+    val text = "New sequence ${newSequenceName} added"
+    val duration = Toast.LENGTH_SHORT
+    val toast = Toast.makeText(context, text, duration)
+    toast.show()
+}
+
+fun hostButtonPress(
+    updateSongSequences: (String, String) -> Unit, newSequenceName: String,
+    newSequence: String, context: Context
+) {
+    updateSongSequences(newSequenceName, newSequence)
+    showMessageOnNewSequenceAdded(newSequenceName, context)
+}
 
 @Composable
 fun SequenceEditor(updateSongSequences: (String, String) -> Unit) {
@@ -20,6 +39,7 @@ fun SequenceEditor(updateSongSequences: (String, String) -> Unit) {
             .padding(20.dp)
             .fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        val context = LocalContext.current
         TextField(
             value = newSequenceName,
             onValueChange = { newSequenceName = it },
@@ -35,7 +55,12 @@ fun SequenceEditor(updateSongSequences: (String, String) -> Unit) {
         )
         Spacer(modifier = Modifier.size(20.dp))
         Button(
-            onClick = { updateSongSequences(newSequenceName, newSequence) },
+            onClick = {
+                hostButtonPress(
+                    updateSongSequences, newSequenceName, newSequence,
+                    context
+                )
+            },
             modifier = Modifier.fillMaxWidth(.5f)
         ) {
             Text(text = "Submit New Sequence")
