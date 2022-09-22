@@ -31,7 +31,11 @@ fun hostButtonPress(
 }
 
 @Composable
-fun SequenceEditor(updateSongSequences: (String, String) -> Unit) {
+fun SequenceEditor(
+    updateSongSequences: (String, String) -> Unit,
+    recordedSequence: String,
+    updateRecordedSequence: Any
+) {
     var newSequenceName by rememberSaveable { mutableStateOf("") }
     var newSequence by rememberSaveable { mutableStateOf("") }
     Column(

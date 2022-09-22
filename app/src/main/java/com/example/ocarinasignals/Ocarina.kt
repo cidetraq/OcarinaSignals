@@ -28,8 +28,11 @@ sealed class Screens(val title: String, val route: String) {
 
 
 @Composable
-fun OpenSequenceEditor(songSequences: MutableMap<String, String>, toggleRecordingMode: () ->
-Unit, recordingModeActive: Boolean) {
+fun OpenSequenceEditor(
+    songSequences: MutableMap<String, String>,
+    recordedSequence: String, updateRecordedSequence: (String) -> Unit, toggleRecordingMode: () ->
+    Unit, recordingModeActive: Boolean
+) {
     MaterialTheme {
         Column {
             val openDialog = remember { mutableStateOf(false) }
@@ -40,30 +43,27 @@ Unit, recordingModeActive: Boolean) {
                         openDialog.value = true
                     toggleRecordingMode()
                 }) {
-                Icon(Icons.Default.RecordVoiceOver, contentDescription = "Localized description",
-                    tint = iconColor)
+                Icon(
+                    Icons.Default.RecordVoiceOver, contentDescription = "Recording Toggle",
+                    tint = iconColor
+                )
             }
 
             if (openDialog.value) {
-
                 AlertDialog(
                     onDismissRequest = {
-                        // Dismiss the dialog when the user clicks outside the dialog or on the back
-                        // button. If you want to disable that functionality, simply use an empty
-                        // onCloseRequest.
                         openDialog.value = false
                     },
                     title = {
-                        Text(text = "Dialog Title")
+                        Text(text = "Sequence Editor")
                     },
                     text = {
-                        SequenceEditor() { newSequenceName: String, newSequence: String ->
-                            songSequences[newSequenceName] = newSequence
-                        }
+                        SequenceEditor(recordedSequence = recordedSequence,
+                            updateRecordedSequence = { it -> updateRecordedSequence(it) },
+                            updateSongSequences = {(s1, s2) -> Unit})
                     },
                     confirmButton = {
                         Button(
-
                             onClick = {
                                 openDialog.value = false
                             }) {
@@ -72,7 +72,6 @@ Unit, recordingModeActive: Boolean) {
                     },
                     dismissButton = {
                         Button(
-
                             onClick = {
                                 openDialog.value = false
                             }) {
@@ -82,7 +81,6 @@ Unit, recordingModeActive: Boolean) {
                 )
             }
         }
-
     }
 }
 
@@ -100,6 +98,14 @@ fun Ocarina(instrumentName: String) {
             )
         )
     }
+    var recordedSequence by rememberSaveable { mutableStateOf("") }
+    fun updateRecordedSequence(note: String) {
+        if (note != "")
+            recordedSequence += note
+        else
+            recordedSequence = ""
+    }
+
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
     fun toggleDrawer() {
@@ -135,10 +141,13 @@ fun Ocarina(instrumentName: String) {
                     onClick = {
                         toggleDrawer()
                     }) {
-                    Icon(Icons.Default.Menu, contentDescription = "Localized description")
+                    Icon(Icons.Default.Menu, contentDescription = "Drawer toggle")
                 }
-                OpenSequenceEditor(songSequences, recordingModeActive = recordingModeActive,
-                    toggleRecordingMode = { recordingModeActive = !recordingModeActive} )
+                OpenSequenceEditor(songSequences,
+                    recordingModeActive = recordingModeActive,
+                    recordedSequence = recordedSequence,
+                    updateRecordedSequence = { it -> updateRecordedSequence(it) },
+                    toggleRecordingMode = { recordingModeActive = !recordingModeActive })
             }
 
         })
@@ -149,12 +158,13 @@ fun Ocarina(instrumentName: String) {
                 startDestination = Screens.Play.route
             ) {
                 composable(Screens.Play.route) {
-                    Play(instrumentName, songSequences)
+                    Play(instrumentName, songSequences, recordingModeActive, recordedSequence,
+                        { it -> updateRecordedSequence(it) })
                 }
                 composable(Screens.SequenceEditor.route) {
-                    SequenceEditor() { newSequenceName: String, newSequence: String ->
+                    SequenceEditor({ newSequenceName: String, newSequence: String ->
                         songSequences[newSequenceName] = newSequence
-                    }
+                    }, recordedSequence) { it -> updateRecordedSequence(it) }
                 }
             }
         }
