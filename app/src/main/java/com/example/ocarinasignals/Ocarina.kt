@@ -59,8 +59,8 @@ fun OpenSequenceEditor(
                     },
                     text = {
                         SequenceEditor(recordedSequence = recordedSequence,
-                            updateRecordedSequence = { it -> updateRecordedSequence(it) },
-                            updateSongSequences = {(s1, s2) -> Unit})
+                            updateRecordedSequence = { it:String -> updateRecordedSequence(it) },
+                            updateSongSequences = {s1, s2  -> Unit})
                     },
                     confirmButton = {
                         Button(
@@ -143,7 +143,8 @@ fun Ocarina(instrumentName: String) {
                     }) {
                     Icon(Icons.Default.Menu, contentDescription = "Drawer toggle")
                 }
-                OpenSequenceEditor(songSequences,
+                OpenSequenceEditor(
+                    songSequences = songSequences,
                     recordingModeActive = recordingModeActive,
                     recordedSequence = recordedSequence,
                     updateRecordedSequence = { it -> updateRecordedSequence(it) },
@@ -164,7 +165,7 @@ fun Ocarina(instrumentName: String) {
                 composable(Screens.SequenceEditor.route) {
                     SequenceEditor({ newSequenceName: String, newSequence: String ->
                         songSequences[newSequenceName] = newSequence
-                    }, recordedSequence) { it -> updateRecordedSequence(it) }
+                    }, recordedSequence) { it:String -> updateRecordedSequence(it) }
                 }
             }
         }
