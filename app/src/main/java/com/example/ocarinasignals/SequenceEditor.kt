@@ -53,7 +53,7 @@ fun SequenceEditor(
         Spacer(modifier = Modifier.size(20.dp))
         TextField(
             value = recordedSequence,
-            onValueChange = { updateRecordedSequence(recordedSequence) },
+            onValueChange = { },
             label = { Text("New Sequence of Notes") },
             singleLine = true, modifier = Modifier.fillMaxWidth()
         )

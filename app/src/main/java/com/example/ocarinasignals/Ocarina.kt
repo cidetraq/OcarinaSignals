@@ -63,19 +63,14 @@ fun OpenSequenceEditor(
                             })
                     },
                     confirmButton = {
-                        Button(
-                            onClick = {
-                                openDialog.value = false
-                            }) {
-                            Text("This is the Confirm Button")
-                        }
                     },
                     dismissButton = {
                         Button(
                             onClick = {
+                                updateRecordedSequence("")
                                 openDialog.value = false
                             }) {
-                            Text("This is the dismiss Button")
+                            Text("Cancel")
                         }
                     }
                 )
