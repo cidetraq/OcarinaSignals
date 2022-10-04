@@ -24,20 +24,20 @@ fun showMessageOnNewSequenceAdded(newSequenceName: String, context: Context) {
 
 fun hostButtonPress(
     updateSongSequences: (String, String) -> Unit, newSequenceName: String,
-    newSequence: String, context: Context
+    newSequence: String, context: Context, updateRecordedSequence: (String) -> Unit
 ) {
     updateSongSequences(newSequenceName, newSequence)
     showMessageOnNewSequenceAdded(newSequenceName, context)
+    updateRecordedSequence("")
 }
 
 @Composable
 fun SequenceEditor(
     updateSongSequences: (String, String) -> Unit,
     recordedSequence: String,
-    updateRecordedSequence: Any
+    updateRecordedSequence: (String) -> Unit
 ) {
     var newSequenceName by rememberSaveable { mutableStateOf("") }
-    var newSequence by rememberSaveable { mutableStateOf("") }
     Column(
         modifier = Modifier
             .padding(20.dp)
@@ -53,7 +53,7 @@ fun SequenceEditor(
         Spacer(modifier = Modifier.size(20.dp))
         TextField(
             value = recordedSequence,
-            onValueChange = { },
+            onValueChange = { updateRecordedSequence(recordedSequence) },
             label = { Text("New Sequence of Notes") },
             singleLine = true, modifier = Modifier.fillMaxWidth()
         )
@@ -61,8 +61,8 @@ fun SequenceEditor(
         Button(
             onClick = {
                 hostButtonPress(
-                    updateSongSequences, newSequenceName, newSequence,
-                    context
+                    updateSongSequences, newSequenceName, recordedSequence,
+                    context, updateRecordedSequence
                 )
             },
             modifier = Modifier.fillMaxWidth(.5f)

@@ -20,12 +20,10 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.composable
 import kotlinx.coroutines.launch
 
-
 sealed class Screens(val title: String, val route: String) {
     object Play : Screens("Play Ocarina", "play")
     object SequenceEditor : Screens("Edit Sequences", "editSequence")
 }
-
 
 @Composable
 fun OpenSequenceEditor(
@@ -59,8 +57,10 @@ fun OpenSequenceEditor(
                     },
                     text = {
                         SequenceEditor(recordedSequence = recordedSequence,
-                            updateRecordedSequence = { it:String -> updateRecordedSequence(it) },
-                            updateSongSequences = {s1, s2  -> Unit})
+                            updateRecordedSequence = { updateRecordedSequence(it) },
+                            updateSongSequences = { newSequenceName: String, newSequence: String ->
+                                songSequences[newSequenceName] = newSequence
+                            })
                     },
                     confirmButton = {
                         Button(
@@ -105,7 +105,6 @@ fun Ocarina(instrumentName: String) {
         else
             recordedSequence = ""
     }
-
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
     fun toggleDrawer() {
@@ -147,7 +146,7 @@ fun Ocarina(instrumentName: String) {
                     songSequences = songSequences,
                     recordingModeActive = recordingModeActive,
                     recordedSequence = recordedSequence,
-                    updateRecordedSequence = { it -> updateRecordedSequence(it) },
+                    updateRecordedSequence = { updateRecordedSequence(it) },
                     toggleRecordingMode = { recordingModeActive = !recordingModeActive })
             }
 

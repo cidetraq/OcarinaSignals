@@ -21,6 +21,7 @@ fun Play(instrumentName: String, songSequences: Map<String, String> = mapOf<Stri
         var playedSequence by rememberSaveable { mutableStateOf("") }
         var isMatch by rememberSaveable { mutableStateOf(false) }
         fun determineIfMatchingSequences() {
+            println(songSequences.toString())
             playedSequence += playedNote
             var foundMatches = songSequences.values.filter { it.contains(playedSequence) }
             if (foundMatches.isEmpty()) {
@@ -128,7 +129,6 @@ fun Play(instrumentName: String, songSequences: Map<String, String> = mapOf<Stri
         sequenceDisplay()
         matchText()
         buttonsUI()
-
     }
 
 }
