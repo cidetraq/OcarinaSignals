@@ -56,7 +56,7 @@ fun OpenSequenceEditor(
                         Text(text = "Sequence Editor")
                     },
                     text = {
-                        SequenceEditor(recordedSequence = recordedSequence,
+                        SequenceEditor(songSequences = songSequences, recordedSequence = recordedSequence,
                             updateRecordedSequence = { updateRecordedSequence(it) },
                             updateSongSequences = { newSequenceName: String, newSequence: String ->
                                 songSequences[newSequenceName] = newSequence
@@ -157,7 +157,7 @@ fun Ocarina(instrumentName: String) {
                         { it -> updateRecordedSequence(it) })
                 }
                 composable(Screens.SequenceEditor.route) {
-                    SequenceEditor({ newSequenceName: String, newSequence: String ->
+                    SequenceEditor(songSequences = songSequences, {newSequenceName: String, newSequence: String ->
                         songSequences[newSequenceName] = newSequence
                     }, recordedSequence) { it:String -> updateRecordedSequence(it) }
                 }

@@ -33,6 +33,7 @@ fun hostButtonPress(
 
 @Composable
 fun SequenceEditor(
+    songSequences: MutableMap<String, String>,
     updateSongSequences: (String, String) -> Unit,
     recordedSequence: String,
     updateRecordedSequence: (String) -> Unit
@@ -69,5 +70,6 @@ fun SequenceEditor(
         ) {
             Text(text = "Submit New Sequence")
         }
+        Text(songSequences.toString())
     }
 }
