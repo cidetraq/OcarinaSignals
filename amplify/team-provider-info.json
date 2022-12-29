@@ -1,0 +1,15 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-ocarinasignals-dev-95402-authRole",
+      "UnauthRoleArn": "arn:aws:iam::524021013048:role/amplify-ocarinasignals-dev-95402-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::524021013048:role/amplify-ocarinasignals-dev-95402-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-ocarinasignals-dev-95402-deployment",
+      "UnauthRoleName": "amplify-ocarinasignals-dev-95402-unauthRole",
+      "StackName": "amplify-ocarinasignals-dev-95402",
+      "StackId": "arn:aws:cloudformation:us-east-1:524021013048:stack/amplify-ocarinasignals-dev-95402/04fe3650-8791-11ed-835a-0aa0ff129185",
+      "AmplifyAppId": "d1r6bwh2bxhhq7"
+    }
+  }
+}
