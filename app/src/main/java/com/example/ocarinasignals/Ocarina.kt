@@ -2,6 +2,7 @@ package com.example.ocarinasignals
 
 import Play
 import SequenceEditor
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -18,7 +19,12 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.composable
+import com.amplifyframework.api.ApiException
+import com.amplifyframework.api.graphql.model.ModelMutation
+import com.amplifyframework.api.graphql.model.ModelQuery
+import com.amplifyframework.core.Amplify
 import kotlinx.coroutines.launch
+import com.amplifyframework.datastore.generated.model.Sequence
 
 sealed class Screens(val title: String, val route: String) {
     object Play : Screens("Play Ocarina", "play")
@@ -56,7 +62,8 @@ fun OpenSequenceEditor(
                         Text(text = "Sequence Editor")
                     },
                     text = {
-                        SequenceEditor(songSequences = songSequences, recordedSequence = recordedSequence,
+                        SequenceEditor(songSequences = songSequences,
+                            recordedSequence = recordedSequence,
                             updateRecordedSequence = { updateRecordedSequence(it) },
                             updateSongSequences = { newSequenceName: String, newSequence: String ->
                                 songSequences[newSequenceName] = newSequence
@@ -79,12 +86,38 @@ fun OpenSequenceEditor(
     }
 }
 
+private fun createSequenceGraphQL(){
+    val sequence = Sequence.builder()
+        .name("My sequence").notes("ZZZ").build()
+
+    Amplify.API.mutate(
+        ModelMutation.create(sequence),
+        { Log.i("MyAmplifyApp", "Todo with id: ${it.data.id}") },
+        { Log.e("MyAmplifyApp", "Create failed", it) }
+    )
+}
+private fun getAllSequences() {
+    Amplify.API.query(ModelQuery.list(
+        Sequence::class.java
+    ),
+        {
+            Log.i(
+                "MyAmplifyApp",
+                "Query results = ${(it.data)}"
+            )
+        },
+        { Log.e("MyAmplifyApp", "Query failed", it) }
+    );
+}
+
 @Composable
 fun Ocarina(instrumentName: String) {
     val navController = rememberNavController()
     var recordingModeActive by rememberSaveable() {
         mutableStateOf(false)
     }
+    createSequenceGraphQL()
+    getAllSequences()
     var songSequences by rememberSaveable {
         mutableStateOf(
             mutableMapOf<String, String>(
@@ -100,6 +133,7 @@ fun Ocarina(instrumentName: String) {
         else
             recordedSequence = ""
     }
+
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
     fun toggleDrawer() {
@@ -157,9 +191,13 @@ fun Ocarina(instrumentName: String) {
                         { it -> updateRecordedSequence(it) })
                 }
                 composable(Screens.SequenceEditor.route) {
-                    SequenceEditor(songSequences = songSequences, {newSequenceName: String, newSequence: String ->
-                        songSequences[newSequenceName] = newSequence
-                    }, recordedSequence) { it:String -> updateRecordedSequence(it) }
+                    SequenceEditor(
+                        songSequences = songSequences,
+                        { newSequenceName: String, newSequence: String ->
+                            songSequences[newSequenceName] = newSequence
+                        },
+                        recordedSequence
+                    ) { it: String -> updateRecordedSequence(it) }
                 }
             }
         }
