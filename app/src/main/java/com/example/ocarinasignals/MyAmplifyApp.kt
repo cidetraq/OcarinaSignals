@@ -5,7 +5,7 @@ import android.util.Log
 import com.amplifyframework.AmplifyException
 import com.amplifyframework.core.Amplify
 
-class MyAmplifyApp: Application() {
+class MyAmplifyApp : Application() {
     override fun onCreate() {
         super.onCreate()
 
